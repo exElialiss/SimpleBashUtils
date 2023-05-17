@@ -13,8 +13,8 @@ s21_cat.o: s21_cat.c
 Table.o: Table.c
 	$(CC) $(FLAGS) Table.c
 
-Flags.o: Flags.c
-	$(CC) $(FLAGS) Flags.c
+Flags.o: ../common/Flags.c
+	$(CC) $(FLAGS) ../common/Flags.c
 
 clean:
 	rm -rf *.o 

@@ -1,6 +1,6 @@
 #include <errno.h>
 
-#include "Flags.h"
+#include "../common/Flags.h"
 #include "Table.h"
 
 int main(int argc, char *argv[]) {
