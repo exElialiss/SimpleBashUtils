@@ -1,6 +1,8 @@
+#include "Table.h"
+
 #include <string.h>
 
-void catSetTable(const char *table[static 256]) {
+void Table(const char *table[static 256]) {
   const char *rawtable[] = {
       "\00",  "\01",  "\02",  "\03",  "\04",  "\05",  "\06",  "\07",  "\b",
       "\t",   "\n",   "\v",   "\014", "\r",   "\016", "\017", "\020", "\021",
@@ -34,12 +36,12 @@ void catSetTable(const char *table[static 256]) {
   };
   memcpy(table, rawtable, sizeof rawtable);
 }
+// для флага -e
+void PrintEndl(const char *table[static 256]) { table['\n'] = "$\n"; }
 
-void CatSetEndl(const char *table[static 256]) { table['\n'] = "$\n"; }
+void PrintTab(const char *table[static 256]) { table['\t'] = "^I"; }
 
-void CatSetTab(const char *table[static 256]) { table['\t'] = "^I"; }
-
-void CatSetNonPrintble(const char *table[static 256]) {
+void PrintNonPrinting(const char *table[static 256]) {
   const char *sample1[] = {"^@", "^A", "^B", "^C", "^D",
                            "^E", "^F", "^G", "^H"};
 
