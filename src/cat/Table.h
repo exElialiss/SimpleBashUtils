@@ -2,7 +2,7 @@
 #define CAT_CATFLAGS_H
 #include <stdio.h>
 
-#include "../common/Flags.h"
+#include "cat.h"
 
 void Table(const char *table[static 256]);
 void PrintEndl(const char *table[static 256]);

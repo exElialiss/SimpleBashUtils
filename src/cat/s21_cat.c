@@ -1,6 +1,6 @@
 #include <errno.h>
 
-#include "../common/Flags.h"
+#include "cat.h"
 #include "Table.h"
 
 int main(int argc, char *argv[]) {
@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   const char *table[256];
   Table(table);
   if (flags.flag_e) PrintEndl(table);
-  if (flags.flag_t) PrintTab(table);
+  if (flags.flag_t) PrintTab(table); 
   if (flags.flag_v) PrintNonPrinting(table);
   Cat(argc, argv, flags, table);
 }
