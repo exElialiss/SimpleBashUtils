@@ -22,12 +22,11 @@ typedef struct {
   int flag_f;
   int countFiles;
   int numberLine;
-  int countMatches; 
+  int countMatches;
 } FlagsGrep;
 
-void ReadFile(char *name, FlagsGrep flags, char *tmpl);
-int FlagsIdentGrep(int argc, char **argv, FlagsGrep *flags,
-                            char **templ);
+void openread_file(char *name, FlagsGrep flags, char *tmpl);
+int FlagsIdentGrep(int argc, char **argv, FlagsGrep *flags, char **templ);
 void pattern_search(char *str, FlagsGrep *FlagGrep, char *tmpl, char *name);
 void flagF(FlagsGrep *flags, char **templ, char *optarg);
 void flagE(FlagsGrep *flags, char **templ, char *optarg);

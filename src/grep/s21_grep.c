@@ -1,13 +1,13 @@
 #include "grep.h"
 
 int main(int argc, char **argv) {
-  FlagsGrep flags = {0};
   if (argc > 1) {
     char *temp = NULL;
+    FlagsGrep flags = {0};
     for (int InputArgs = FlagsIdentGrep(argc, argv, &flags, &temp);
          InputArgs < argc; InputArgs++) {
-      ReadFile(argv[InputArgs], flags, temp);
-         }
+      openread_file(argv[InputArgs], flags, temp);
+    }
     if (temp != NULL) {
       free(temp);
     }
@@ -15,7 +15,53 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void ReadFile(char *path, FlagsGrep flags, char *templ) {
+//идентификация флагов
+int FlagsIdentGrep(int argc, char **argv, FlagsGrep *flags, char **templ) {
+  for (int currentFlag = 0; currentFlag != -1;
+       currentFlag = getopt(argc, argv, "e:ivclnhsf:o")) {
+    switch (currentFlag) {
+      case 'e':
+        flagE(flags, templ, optarg);
+        break;
+      case 'i':
+        flags->flag_i = 1;
+        break;
+      case 'v':
+        flags->flag_v = 1;
+        break;
+      case 'c':
+        flags->flag_c = 1;
+        break;
+      case 'l':
+        flags->flag_l = 1;
+        break;
+      case 'n':
+        flags->flag_n = 1;
+        break;
+      case 'h':
+        flags->flag_h = 1;
+        break;
+      case 's':
+        flags->flag_s = 1;
+        break;
+      case 'f':
+        flagF(flags, templ, optarg);
+        break;
+      case 'o':
+        flags->flag_o = 1;
+        break;
+    }
+  }
+  if ((flags->flag_e || flags->flag_f) == 0) {
+    PatternBuf(templ, argv[optind]);
+    ++optind;
+  }
+  disableFlagO(flags, argc, optind);
+  return optind;
+}
+
+//
+void openread_file(char *path, FlagsGrep flags, char *templ) {
   FILE *file = fopen(path, "r");
 
   if (file != NULL) {
@@ -82,8 +128,6 @@ void pattern_search(char *line, FlagsGrep *flags, char *templ, char *path) {
   }
 }
 
-
-
 void flagF(FlagsGrep *flags, char **templ, char *optarg) {
   FILE *file = fopen(optarg, "r");
   if (file != NULL) {
@@ -136,7 +180,7 @@ void flagLC(FlagsGrep flags, char *path) {
         printf("%s\n", path);
       }
     } else {
-      if (flags.countFiles > 1) {
+      if (flags.countFiles > 1 && !flags.flag_h) {
         printf("%s:", path);
       }
       printf("%i\n", flags.countMatches);
@@ -148,12 +192,16 @@ void flagLC(FlagsGrep flags, char *path) {
 }
 
 void flagO(regex_t regex, char *line, FlagsGrep flags, char *path) {
-  int matchCount = 0;
+  int countMatchesInLine = 0;
 
   while (regexec(&regex, line, 0, NULL, 0) == flags.flag_v) {
     int start = 0;
     int end = strlen(line);
     char *buff = calloc(strlen(line) + 1, 1);
+
+    if (countMatchesInLine > 0 && flags.countFiles > 1 && !flags.flag_h) {
+      printf("%s:", path);
+    }
 
     if (buff == NULL) {
       printf("Can't allocate memory\n");
@@ -161,15 +209,15 @@ void flagO(regex_t regex, char *line, FlagsGrep flags, char *path) {
     }
     strcpy(buff, line);
 
-    while (regexec(&regex, buff, 0, NULL, 0) == flags.flag_v) {
+    while (regexec(&regex, buff, 0, NULL, 0) == 0) {
       end--;
       buff[strlen(buff) - 1] = 0;
     }
     buff[strlen(buff)] = line[strlen(buff)];
 
-    while (regexec(&regex, buff, 0, NULL, 0) == flags.flag_v &&
-           strlen(buff) > 0) {
+    while (regexec(&regex, buff, 0, NULL, 0) == 0 && strlen(buff) > 0) {
       int j = 0;
+
       while (buff[j] != 0) {
         buff[j] = buff[j + 1];
         j++;
@@ -184,11 +232,6 @@ void flagO(regex_t regex, char *line, FlagsGrep flags, char *path) {
       buffSize--;
     }
     buff[0] = line[start];
-    
-    if (matchCount != 0) {
-      printf("%s:", path);
-    }
-
     printf("%s\n", buff);
     free(buff);
     buffSize = start + 1;
@@ -198,8 +241,7 @@ void flagO(regex_t regex, char *line, FlagsGrep flags, char *path) {
       buffSize++;
     }
     line[buffSize - start - 1] = 0;
-
-    matchCount++;
+    ++countMatchesInLine;
   }
 }
 

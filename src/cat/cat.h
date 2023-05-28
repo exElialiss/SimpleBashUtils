@@ -1,5 +1,6 @@
 #ifndef FLAGS_IDENT_H
 #define FLAGS_IDENT_H
+#include <errno.h>
 #include <getopt.h>
 #include <regex.h>
 #include <stdio.h>
@@ -16,9 +17,6 @@ typedef struct {
 
 } Flags;
 
-
-
 Flags FlagsIdent(int argc, char* argv[], Flags* flags);
-
 
 #endif
